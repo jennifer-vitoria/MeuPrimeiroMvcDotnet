@@ -27,6 +27,7 @@ namespace MeuPrimeiroMvc.Controllers
         [Route("Cadastrar")]
         public IActionResult CadastrarEquipe(IFormCollection formEquipe) // Recebendo dados no padrão FormData - para trabalhar com arquivos
         {
+            // ALO ALO 
             if (formEquipe.Files.Count > 0)
             {
                 /* Recebendo o arquivo anexado */
@@ -41,39 +42,41 @@ namespace MeuPrimeiroMvc.Controllers
                 {
                     // Caso não exista - o projeto fica responsável por criar essa pasta
                     Directory.CreateDirectory(pastaArmazenamento);
-                    /* Passando a localização da pasta de armazenamento + o nome do arquivo a ser salvo*/
-                    var arquivoArmazenado = Path.Combine(pastaArmazenamento, arquivoAnexado.FileName);
-
-                    // Chamamos uma função do C# para a criação de arquivo - dentro da pasta de armazenamento
-                    using (var stream = new FileStream(arquivoArmazenado, FileMode.Create))
-                    {
-                        // Para esse novo arquivo, copiamos o conteudo do arquivo anexado
-                        arquivoAnexado.CopyTo(stream);
-                    }
-
-                    // Criando o objeto de equipe para cadastro
-                    Equipe equipe = new Equipe()
-                    {
-                        Nome = formEquipe["Nome"],
-                        Imagem = arquivoAnexado.FileName
-                    };
-
-                    // Armazenar a equipe no banco de dados
-                    context.Add(equipe);
                 }
 
-                else
+                /* Passando a localização da pasta de armazenamento + o nome do arquivo a ser salvo*/
+                var arquivoArmazenado = Path.Combine(pastaArmazenamento, arquivoAnexado.FileName);
+
+                // Chamamos uma função do C# para a criação de arquivo - dentro da pasta de armazenamento
+                using (var stream = new FileStream(arquivoArmazenado, FileMode.Create))
                 {
-                    // Criando o objeto de equipe para cadastro
-                    Equipe equipe = new Equipe()
-                    {
-                        Nome = formEquipe["Nome"],
-                        Imagem = "padrão.jpg"
-                    };
-                    // Armazenar a equipe no banco de dados
-                    context.Add(equipe);
+                    // Para esse novo arquivo, copiamos o conteudo do arquivo anexado
+                    arquivoAnexado.CopyTo(stream);
                 }
+
+                // Criando o objeto de equipe para cadastro
+                Equipe equipe = new Equipe()
+                {
+                    Nome = formEquipe["Nome"],
+                    Imagem = arquivoAnexado.FileName
+                };
+
+                // Armazenar a equipe no banco de dados
+                context.Add(equipe);
             }
+
+            else
+            {
+                // Criando o objeto de equipe para cadastro
+                Equipe equipe = new Equipe()
+                {
+                    Nome = formEquipe["Nome"],
+                    Imagem = "padrão.jpg"
+                };
+                // Armazenar a equipe no banco de dados
+                context.Add(equipe);
+            }
+
             //Registrar as alterações no banco de dados
             context.SaveChanges();
 
